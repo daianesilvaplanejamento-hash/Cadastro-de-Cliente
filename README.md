@@ -1,4 +1,3 @@
-# Cadastro-de-Cliente
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -341,7 +340,7 @@
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsn4op9zxpVAtPIYBMSf7cBhFzcKXt_CGI0BJ5Olb7XPZo0JnBQteNX7yP2wIsPGJG/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvzBorjYi7HZaEwv0MXr7ucGC6OWKc2XwlTCYRDcEKGmBwJPUqeook0b2VcRtPuXNh/exec";
 
 const FORMACOES = ["Ensino Fundamental","Ensino Médio","Técnico","Tecnólogo","Graduação / Bacharel","Licenciatura","Pós-graduação / Especialização","MBA","Mestrado","Doutorado","Pós-Doutorado"];
 
@@ -509,7 +508,9 @@ function finalizar(){
   btn.disabled=true;
   btn.innerHTML='<span class="spinner"></span> Enviando...';
   const dados=getDados();
-  fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)})
+  const form = new FormData();
+  form.append('data', JSON.stringify(dados));
+  fetch(SCRIPT_URL, {method:'POST', body: form})
     .then(()=>mostrarSucesso(dados))
     .catch(()=>mostrarSucesso(dados));
 }
@@ -532,3 +533,4 @@ function novoCadastro(){
 </script>
 </body>
 </html>
+
