@@ -508,11 +508,33 @@ function finalizar(){
   btn.disabled=true;
   btn.innerHTML='<span class="spinner"></span> Enviando...';
   const dados=getDados();
-  const form = new FormData();
-  form.append('data', JSON.stringify(dados));
-  fetch(SCRIPT_URL, {method:'POST', body: form})
-    .then(()=>mostrarSucesso(dados))
-    .catch(()=>mostrarSucesso(dados));
+
+  // Cria um form oculto e submete via iframe — funciona com Apps Script no GitHub Pages
+  const iframe = document.createElement('iframe');
+  iframe.name = 'hidden_iframe';
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = SCRIPT_URL;
+  form.target = 'hidden_iframe';
+  form.style.display = 'none';
+
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'data';
+  input.value = JSON.stringify(dados);
+  form.appendChild(input);
+  document.body.appendChild(form);
+
+  iframe.onload = function() {
+    mostrarSucesso(dados);
+    document.body.removeChild(form);
+    setTimeout(() => document.body.removeChild(iframe), 1000);
+  };
+
+  form.submit();
 }
 
 function mostrarSucesso(dados){
@@ -533,4 +555,3 @@ function novoCadastro(){
 </script>
 </body>
 </html>
-
