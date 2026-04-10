@@ -528,10 +528,12 @@ function finalizar(){
   form.appendChild(input);
   document.body.appendChild(form);
 
+  let primeiroLoad = true;
   iframe.onload = function() {
+    if (primeiroLoad) { primeiroLoad = false; return; }
     mostrarSucesso(dados);
-    document.body.removeChild(form);
-    setTimeout(() => document.body.removeChild(iframe), 1000);
+    try { document.body.removeChild(form); } catch(e) {}
+    setTimeout(() => { try { document.body.removeChild(iframe); } catch(e) {} }, 1000);
   };
 
   form.submit();
