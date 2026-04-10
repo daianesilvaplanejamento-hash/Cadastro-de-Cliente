@@ -340,7 +340,7 @@
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsn4op9zxpVAtPIYBMSf7cBhFzcKXt_CGI0BJ5Olb7XPZo0JnBQteNX7yP2wIsPGJG/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvzBorjYi7HZaEwv0MXr7ucGC6OWKc2XwlTCYRDcEKGmBwJPUqeook0b2VcRtPuXNh/exec";
 
 const FORMACOES = ["Ensino Fundamental","Ensino Médio","Técnico","Tecnólogo","Graduação / Bacharel","Licenciatura","Pós-graduação / Especialização","MBA","Mestrado","Doutorado","Pós-Doutorado"];
 
@@ -508,9 +508,35 @@ function finalizar(){
   btn.disabled=true;
   btn.innerHTML='<span class="spinner"></span> Enviando...';
   const dados=getDados();
-  fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)})
-    .then(()=>mostrarSucesso(dados))
-    .catch(()=>mostrarSucesso(dados));
+
+  // Cria um form oculto e submete via iframe — funciona com Apps Script no GitHub Pages
+  const iframe = document.createElement('iframe');
+  iframe.name = 'hidden_iframe';
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = SCRIPT_URL;
+  form.target = 'hidden_iframe';
+  form.style.display = 'none';
+
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'data';
+  input.value = JSON.stringify(dados);
+  form.appendChild(input);
+  document.body.appendChild(form);
+
+  let primeiroLoad = true;
+  iframe.onload = function() {
+    if (primeiroLoad) { primeiroLoad = false; return; }
+    mostrarSucesso(dados);
+    try { document.body.removeChild(form); } catch(e) {}
+    setTimeout(() => { try { document.body.removeChild(iframe); } catch(e) {} }, 1000);
+  };
+
+  form.submit();
 }
 
 function mostrarSucesso(dados){
