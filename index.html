@@ -190,7 +190,7 @@
             <div class="servico-card">
               <input type="radio" name="servico" id="srv-ci" value="Consultoria de Investimentos">
               <label class="servico-label" for="srv-ci">
-                <div class="servico-icon">
+                   <div class="servico-icon">
                   <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                 </div>
                 <div class="servico-nome">Consultoria de Investimentos</div>
@@ -513,6 +513,16 @@ function finalizar(){
   const iframe = document.createElement('iframe');
   iframe.name = 'hidden_iframe';
   iframe.style.display = 'none';
+
+  // Define onload ANTES de adicionar ao DOM para capturar o about:blank inicial
+  let primeiroLoad = true;
+  iframe.onload = function() {
+    if (primeiroLoad) { primeiroLoad = false; return; }
+    mostrarSucesso(dados);
+    try { document.body.removeChild(form); } catch(e) {}
+    setTimeout(() => { try { document.body.removeChild(iframe); } catch(e) {} }, 1000);
+  };
+
   document.body.appendChild(iframe);
 
   const form = document.createElement('form');
@@ -527,14 +537,6 @@ function finalizar(){
   input.value = JSON.stringify(dados);
   form.appendChild(input);
   document.body.appendChild(form);
-
-  let primeiroLoad = true;
-  iframe.onload = function() {
-    if (primeiroLoad) { primeiroLoad = false; return; }
-    mostrarSucesso(dados);
-    try { document.body.removeChild(form); } catch(e) {}
-    setTimeout(() => { try { document.body.removeChild(iframe); } catch(e) {} }, 1000);
-  };
 
   form.submit();
 }
